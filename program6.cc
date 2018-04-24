@@ -7,16 +7,24 @@
  */
 
 #include <iostream>
+#include <fstream>
+#include <stdint.h>
+#include <string>
 #include "cdk.h"
 
-
-#define MATRIX_WIDTH 4
-#define MATRIX_HEIGHT 3
-#define BOX_WIDTH 15
+#define MATRIX_WIDTH 3
+#define MATRIX_HEIGHT 5
+#define BOX_WIDTH 20
 #define MATRIX_NAME_STRING "Test Matrix"
 
 using namespace std;
 
+class BinaryHeaderFile{
+public:
+  uint32_t magicNumber;
+  uint32_t versionNumber;
+  uint64_t numRecords;
+};
 
 int main()
 {
@@ -64,17 +72,39 @@ int main()
 
   /* Display the Matrix */
   drawCDKMatrix(myMatrix, true);
+  
+  /* Open the binary file for reading. */
+  ifstream binInFile ("cs3377.bin", ios::in | ios::binary);
+  if(!binInFile.is_open()){
+    cerr << "Binary File did not open correctly." << endl;
+    exit(-1);
+  }
+
+  /* Read the binary file header. */
+  BinaryHeaderFile * header = new BinaryHeaderFile();
+  binInFile.read((char*) header, sizeof(BinaryHeaderFile));
+
 
   /*
    * Dipslay a message
    */
-  setCDKMatrixCell(myMatrix, 2, 2, "Test Message");
+  char* line = new char[1024];
+  sprintf(line, "Magic: 0x%X", header->magicNumber);
+  setCDKMatrixCell(myMatrix, 1, 1, line);
+  sprintf(line, "Version: %u", header->versionNumber);
+  setCDKMatrixCell(myMatrix, 1, 2, line);
+  sprintf(line, "NumRecords: %lu", header->numRecords);
+  setCDKMatrixCell(myMatrix, 1, 3, line);
+  
   drawCDKMatrix(myMatrix, true);    /* required  */
 
   /* So we can see results, pause until a key is pressed. */
   unsigned char x;
   cin >> x;
 
-  // Cleanup screen
+  // Cleanup screen and close Binary File
   endCDK();
+  binInFile.close();
 }
+
+
