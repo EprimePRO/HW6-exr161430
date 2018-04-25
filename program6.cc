@@ -110,7 +110,10 @@ int main()
   setCDKMatrixCell(myMatrix, 1, 3, line);
   
   BinaryFileRecord * record = new BinaryFileRecord();
-
+  
+  if((int)header->numRecords>4)
+    header->numRecords = 4;
+  
   for(int i=1; i<=(int)header->numRecords; i++){
     binInFile.read((char *) record, sizeof(BinaryFileRecord));
     if((int)record->strLength > maxRecordStringLength){
