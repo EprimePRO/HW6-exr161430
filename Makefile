@@ -1,8 +1,6 @@
-#
-# UTD CS3377 CDK Example
-# Dr. Perkins
-# stephen.perkins@utdallas.edu
-#
+#Emanuel Rios
+#exr161430@utdallas.edu
+#CS 3377.502 - Program6
 
 CXX = g++
 CXXFLAGS = -Wall -g 
