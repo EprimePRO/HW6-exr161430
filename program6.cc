@@ -1,3 +1,8 @@
+//Emanuel Rios
+//exr161430@utdallas.edu
+//CS 3377.502 - Program6
+
+
 /*
  * Usage of CDK Matrix
  *
@@ -15,7 +20,7 @@
 #define MATRIX_WIDTH 3
 #define MATRIX_HEIGHT 5
 #define BOX_WIDTH 20
-#define MATRIX_NAME_STRING "Test Matrix"
+#define MATRIX_NAME_STRING "Binary File Contents"
 
 using namespace std;
 
@@ -24,6 +29,14 @@ public:
   uint32_t magicNumber;
   uint32_t versionNumber;
   uint64_t numRecords;
+};
+
+const int maxRecordStringLength = 25;
+
+class BinaryFileRecord {
+public:
+  uint8_t strLength;
+  char stringBuffer[maxRecordStringLength];
 };
 
 int main()
@@ -41,8 +54,8 @@ int main()
   // values you choose to set for MATRIX_WIDTH and MATRIX_HEIGHT
   // above.
 
-  const char 		*rowTitles[] = {"R0", "R1", "R2", "R3", "R4", "R5"};
-  const char 		*columnTitles[] = {"C0", "C1", "C2", "C3", "C4", "C5"};
+  const char 		*rowTitles[] = {"o", "a", "b", "c", "d", "e"};
+  const char 		*columnTitles[] = {"o", "a", "b", "c", "d", "e"};
   int		boxWidths[] = {BOX_WIDTH, BOX_WIDTH, BOX_WIDTH, BOX_WIDTH, BOX_WIDTH, BOX_WIDTH};
   int		boxTypes[] = {vMIXED, vMIXED, vMIXED, vMIXED,  vMIXED,  vMIXED};
 
@@ -96,6 +109,20 @@ int main()
   sprintf(line, "NumRecords: %lu", header->numRecords);
   setCDKMatrixCell(myMatrix, 1, 3, line);
   
+  BinaryFileRecord * record = new BinaryFileRecord();
+
+  for(int i=1; i<=(int)header->numRecords; i++){
+    binInFile.read((char *) record, sizeof(BinaryFileRecord));
+    if((int)record->strLength > maxRecordStringLength){
+      cerr << "Record string length is too long max is " << maxRecordStringLength << endl;
+      exit(-2);
+    }
+    sprintf(line, "strlen: %hu", record->strLength);
+    setCDKMatrixCell(myMatrix, i+1, 1, line);
+    
+    setCDKMatrixCell(myMatrix, i+1, 2, record->stringBuffer);
+  }
+
   drawCDKMatrix(myMatrix, true);    /* required  */
 
   /* So we can see results, pause until a key is pressed. */
